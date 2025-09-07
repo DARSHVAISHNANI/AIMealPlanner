@@ -4,6 +4,10 @@ The AI Personalized Meal Planner is a comprehensive web application built with S
 ### Demo Video:
 [![Watch the video]](https://drive.google.com/file/d/11Fbke21RvIKaqgKWeUTitbe5S_hsuC6N/view?usp=sharing)
 
+### Deployed Website 
+[![AL_MEAL_PLANNER]](https://personalize-ai-meal-planner.streamlit.app/)
+
+
 ## ✨ Features
 ### 👤 User Profiling
 A simple interface to create or update your health profile, including goals, dietary preferences, allergies, physical stats.
