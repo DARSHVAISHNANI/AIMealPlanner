@@ -9,3 +9,4 @@ schedule==1.2.2
 streamlit==1.44.1
 twilio==9.7.0
 google-genai
+groq
