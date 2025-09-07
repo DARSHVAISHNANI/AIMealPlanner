@@ -200,33 +200,22 @@ with tab2:
                 for day in sorted(meal_plan_json.keys()):
                     day_data = meal_plan_json[day]
                     st.markdown(f"---\n\n### 📅 {day.replace('Day', 'Day ')}")
+                    # This line correctly separates the meals from the summary for the column layout
                     meals = {k: v for k, v in day_data.items() if k.lower() != "summary"}
                     cols = st.columns(len(meals) if meals else 1)
                     
-                    i = 0 # Initialize a counter for columns
+                    i = 0
                     for meal_key, meal_val in day_data.items():
-                        # --- FIX IS HERE ---
-                        # Check if meal_val is a dictionary before processing
                         if isinstance(meal_val, dict):
                             with cols[i]:
                                 dish = meal_val.get("dish_name", "N/A")
-                                # --- FIX IS HERE ---
-                                # Map generic meal keys to proper names
                                 meal_name_mapping = {
-                                    "Breakfast": "Breakfast",
-                                    "Lunch": "Lunch",
-                                    "Dinner": "Dinner",
-                                    "Snack 1": "Snack 1",
-                                    "Snack 2": "Snack 2",
-                                    # Add fallbacks for the agent's current output
-                                    "Meal 1": "Breakfast",
-                                    "Meal 2": "Lunch",
-                                    "Meal 3": "Dinner"
+                                    "Breakfast": "Breakfast", "Lunch": "Lunch", "Dinner": "Dinner",
+                                    "Snack 1": "Snack 1", "Snack 2": "Snack 2",
+                                    "Meal 1": "Breakfast", "Meal 2": "Lunch", "Meal 3": "Dinner"
                                 }
                                 display_meal_name = meal_name_mapping.get(meal_key, meal_key)
-
                                 st.markdown(f"<div class='dish-name'>{display_meal_name}: {dish}</div>", unsafe_allow_html=True)
-                                # st.markdown(f"<div class='dish-name'>{meal_key}: {dish}</div>", unsafe_allow_html=True)
                                 
                                 image_key = f"{day}_{dish.replace(' ', '_')}"
                                 fid = image_ids.get(image_key)
@@ -236,8 +225,11 @@ with tab2:
                                     
                                 st.markdown(f"<div class='metrics-row'><div>Calories: {meal_val.get('calories_percentage', 'N/A')}%</div><div>Protein: {meal_val.get('protein_percentage', 'N/A')}%</div></div>", unsafe_allow_html=True)
                                 st.markdown(f"<div class='vitamins'>Vitamins: {meal_val.get('vitamin_mineral_highlights', '')}</div>", unsafe_allow_html=True)
-                                i += 1 # Increment counter only when a meal is processed
+                                i += 1
                             
+                    # --- FIX IS HERE ---
+                    # This block of code, which you already had, correctly finds and displays the summary
+                    # for the current day after the meal columns have been rendered.
                     if "summary" in day_data:
                         st.markdown(f"<div class='daily-summary'><span class='summary-label'>📌 Daily Summary:</span><br><span class='summary-text'>{day_data['summary']}</span></div>", unsafe_allow_html=True)
 
@@ -480,7 +472,7 @@ with tab6:
                     st.markdown("---")
 
                     # --- 2. Display Day-wise Meal Plan ---
-                    st.subheader("📅 Your Meal Plan")
+                    st.subheader("📅 Your Weekly Meal Plan")
                     if meal_plan_doc:
                         meal_plan_json = meal_plan_doc.get("meal_plan", {})
                         image_ids = meal_plan_doc.get("image_file_ids", {})
@@ -534,6 +526,9 @@ with tab6:
                                             st.write(f"**Prep Time:** {recipe.get('prep_time', 'N/A')} | **Cook Time:** {recipe.get('cook_time', 'N/A')}")
                                             for step, instruction in recipe.get("steps", {}).items():
                                                 st.write(f"**{step.replace('-', ' ').title()}:** {instruction}")
+                        
+                        if "summary" in day_data:
+                            st.markdown(f"<div class='daily-summary'><span class='summary-label'>📌 Daily Summary:</span><br><span class='summary-text'>{day_data['summary']}</span></div>", unsafe_allow_html=True)
                     else:
                         st.warning("No Recipes found. Please generate them in Tab 3.")
 
