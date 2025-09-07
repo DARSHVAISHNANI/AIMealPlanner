@@ -2,7 +2,7 @@
 The AI Personalized Meal Planner is a comprehensive web application built with Streamlit that leverages a suite of specialized AI agents to provide users with a complete, personalized nutrition and meal planning experience. From initial health profiling to generating daily meal plans, recipes, an interactive shopping list, and even sending reminders via WhatsApp, this tool is your all-in-one AI nutrition assistant.
 
 ### Demo Video:
-[![Watch the video]](https://drive.google.com/file/d/13pVq6176Fk5Be91rkaKVdpH_-mnYBuiY/view?usp=sharing)
+[![Watch the video]](https://drive.google.com/file/d/11Fbke21RvIKaqgKWeUTitbe5S_hsuC6N/view?usp=sharing)
 
 ## ✨ Features
 ### 👤 User Profiling
