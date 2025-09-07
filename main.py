@@ -11,7 +11,7 @@ from database import (
 )
 from utils import clean_mongo_doc, generate_dish_image_bytes
 from upload_images import upload_images
-from Whatsapp_message import send_meal_notifications
+from whatsapp_message import send_meal_notifications
 import schedule
 import time
 
