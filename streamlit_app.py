@@ -23,6 +23,8 @@ from database import (
 from utils import clean_mongo_doc, generate_dish_image_bytes
 from upload_images import upload_images_and_get_urls # New import
 from whatsapp_message import send_whatsapp_message # New import
+from charts import generate_and_save_all_charts # New Import
+import streamlit.components.v1 as components
 
 load_dotenv()
 
@@ -63,8 +65,8 @@ st.markdown(
 )
 
 # --- Create Tabs ---
-tabs = ["Step 1: Profile", "Step 2: Meal Plan", "Step 3: Recipes", "Step 4: Shopping List", "Step 5: Get on WhatsApp", "Step 6: View My Data"]
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(tabs)
+tabs = ["Profile", "Meal Plan", "Recipes", "Shopping List", "WhatsApp", "View Data", "Dashboard"]
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(tabs)
 
 # --- TAB 1: User Profile & Nutrition Report ---
 with tab1:
@@ -435,7 +437,6 @@ with tab5:
                     st.error(f"An error occurred while sending messages: {e}")
 
 # --- TAB 6: View All User Data ---
-# --- TAB 6: View All User Data (Beautifully Formatted) ---
 with tab6:
     st.header("📜 Your Complete AI-Generated Health Plan")
 
@@ -561,3 +562,65 @@ with tab6:
 
             except Exception as e:
                 st.error(f"An error occurred while fetching your data: {e}")
+
+# --- MODIFIED TAB 7: Interactive Health Dashboard ---
+with tab7:
+    st.header("📊 Your Interactive Health Dashboard")
+
+    if not phone_input:
+        st.warning("Please enter your phone number to generate and view your dashboard.")
+    else:
+        user = user_collection.find_one({"phone": phone_input})
+        if not user:
+            st.info("No profile found for this phone number. Please create one in Tab 1.")
+        else:
+            user_id_str = str(user["_id"])
+
+            st.info("Click the button below to generate a visual dashboard of your latest nutrition and shopping data.")
+            if st.button("🚀 Generate My Interactive Dashboard"):
+                with st.spinner("🎨 Creating your personalized interactive charts..."):
+                    success = generate_and_save_all_charts(user_id_str)
+                    if success:
+                        st.success("✅ Your interactive dashboard has been generated!")
+                        st.rerun()
+                    else:
+                        st.error("❌ Could not generate charts. Please ensure all previous steps are complete.")
+
+            st.markdown("---")
+
+            # --- Display Interactive Charts ---
+            chart_filenames = {
+                "Macro Distribution": f"user_{user['_id']}_macro_distribution.html",
+                "Calories vs Target": f"user_{user['_id']}_calories_vs_target.html",
+                "Shopping Breakdown": f"user_{user['_id']}_shopping_breakdown.html",
+                "Grocery Items": f"user_{user['_id']}_grocery_items.html" # Added new chart
+            }
+
+            # Check if at least one chart exists
+            if fs.exists({"filename": chart_filenames["Macro Distribution"]}):
+                st.subheader("Nutrition Insights")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    macro_chart_file = fs.find_one({"filename": chart_filenames["Macro Distribution"]})
+                    if macro_chart_file: components.html(macro_chart_file.read().decode(), height=450)
+                
+                with col2:
+                    calorie_chart_file = fs.find_one({"filename": chart_filenames["Calories vs Target"]})
+                    if calorie_chart_file: components.html(calorie_chart_file.read().decode(), height=450)
+
+                st.markdown("---")
+                st.subheader("Shopping Insights")
+                col3, col4 = st.columns(2)
+
+                with col3:
+                    shopping_chart_file = fs.find_one({"filename": chart_filenames["Shopping Breakdown"]})
+                    if shopping_chart_file: components.html(shopping_chart_file.read().decode(), height=500)
+
+                with col4:
+                    # Display the new grocery items chart
+                    grocery_chart_file = fs.find_one({"filename": chart_filenames["Grocery Items"]})
+                    if grocery_chart_file: components.html(grocery_chart_file.read().decode(), height=500)
+            
+            else:
+                st.write("Your dashboard is ready to be generated. Click the button above to see your charts!")
