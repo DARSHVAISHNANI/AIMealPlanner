@@ -3,9 +3,10 @@ from google import genai
 from PIL import Image
 from io import BytesIO
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 # Replace with your actual API key
-client = genai.Client(api_key="AIzaSyC3181Om2bXkBrHNVptE6UIGR_eO0r_4jE")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def clean_mongo_doc(doc):
     """Recursively convert MongoDB ObjectId to string for JSON serialization."""
